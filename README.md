@@ -1,4 +1,4 @@
-#Residual Tensor Network.
+# tensor-network
 Requirements:
 * TensorFlow (see http://www.tensorflow.org for how to install/upgrade)
 * NumPy (see http://www.numpy.org/)
