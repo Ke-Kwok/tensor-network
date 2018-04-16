@@ -1,0 +1,49 @@
+import tensorflow as tf
+import numpy as np
+import residual_tensor_network as rtn
+
+train_size = 60000
+batch_size=1000
+test_size=10000
+totalepoch =5000
+input_dim=1
+bond_dim =50
+length = 196
+num_classes = 10
+
+#load data
+train_images = np.load("train-images.npy")#shape:[train_size,length,input_dim]
+train_labels = np.load("MNIST_data/train-labels.npy")#shape:[train_size,num_classes]
+test_images=np.load("MNIST_data/test-images.npy")
+test_labels= np.load("MNIST_data/test-labels.npy")
+
+
+def build_network():
+
+    x=tf.placeholder("float",[None,length,input_dim])
+
+    MPS_layer=rtn.mps(bond_dim=bond_dim,num_classes=num_classes,map_dim=2)
+    readout=MPS_layer(x)
+
+    # loss and prediction function
+    y=tf.placeholder("float",[None,num_classes])
+    cost=tf.reduce_mean(tf.square(y-readout))
+    train_step=tf.train.AdamOptimizer(2e-4).minimize(cost)
+    correct_predict=tf.equal(tf.argmax(readout,1),tf.argmax(y,1))
+    accuracy=tf.reduce_mean(tf.cast(correct_predict,"float"))
+    return x,y,accuracy,train_step
+
+def train_network(x,y,accuracy,train_step):
+    for i in range(totalepoch):
+        if i%10==0:
+            train_error_rate=1-sess.run(accuracy,feed_dict={x: train_images, y: train_labels})
+            test_error_rate=1-sess.run(accuracy,feed_dict={x: test_images, y: test_labels})
+            print("step:",i, "training error_rate" ,train_error_rate,'test error_rate',test_error_rate)
+        j=(i%(train_size//batch_size)+1)*batch_size
+        train_step.run(feed_dict={x:train_images[j-batch_size:j],y:train_labels[j-batch_size:j]})
+
+if __name__=='__main__':
+    sess=tf.InteractiveSession()
+    x, y, accuracy, train_step=build_network()
+    sess.run(tf.global_variables_initializer())
+    train_network(x,y,accuracy,train_step)
