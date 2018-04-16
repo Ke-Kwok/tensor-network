@@ -12,10 +12,10 @@ length = 196
 num_classes = 10
 
 #load data
-train_images = np.load("MNIST_data/train-images.npy")#shape:[train_size,length,input_dim]
-train_labels = np.load("MNIST_data/train-labels.npy")#shape:[train_size,num_classes]
-test_images=np.load("MNIST_data/test-images.npy")
-test_labels= np.load("MNIST_data/test-labels.npy")
+train_images = np.load("train-images.npy")#shape:[train_size,length,input_dim]
+train_labels = np.load("train-labels.npy")#shape:[train_size,num_classes]
+test_images=np.load("test-images.npy")
+test_labels= np.load("test-labels.npy")
 
 
 def build_network():
